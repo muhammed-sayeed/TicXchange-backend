@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     sparse: true,
     trim: true
   },
+  role: {
+    type: String,
+    enum: ['admin','user']
+  },
   password: {
     type: String
   }
