@@ -7,12 +7,13 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/dbConnection.js';
 import authRotes from './routes/auth_routes.js'
 
-
 dotenv.config()
 
 const app = express();
 
-connectDB();
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 app.use(cors({
   origin: 'http://localhost:4200',
@@ -25,7 +26,4 @@ app.use(cookieParser());
 
 app.use('/auth', authRotes);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, ()=> {
-   console.log(`server running on port ${PORT}`)
-})
+export default app;
