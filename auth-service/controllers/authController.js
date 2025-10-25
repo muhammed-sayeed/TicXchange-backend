@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { OAuth2Client } from "google-auth-library";
 
@@ -6,8 +6,7 @@ import redisClient from "../config/redisClient.js";
 import auth_user from "../models/auth_user.js";
 import {
   generateAccessToken,
-  generateRefreshToken,
-  verifyRefreshToken,
+  generateRefreshToken
 } from "../utils/jwt.js";
 import { sentOtp } from "../utils/otp.js";
 
@@ -237,4 +236,28 @@ export const googeLogin = async(req, res) =>{
       message: "Google authentication failed. Please try again.",
     });
   }
+}
+
+export const refreshAccessToken = async (req, res) => {
+  const refreshToken  = req.body.refreshtoken;
+  if(!refreshToken) return res.status(401).json({
+    message: 'efresh token required'
+  });
+
+  jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, decode) => {
+    if(err) return res.status(403).json({
+      message: 'Invalid refresh token'
+    });
+    const user = {
+      _id: decode.userId,
+      email: decode.email
+    }
+    const accessToken = generateAccessToken(user);
+    return res.status(200).json({
+      message: 'Token genarated successfully',
+      data: {
+        token: accessToken
+      }
+    })
+  })
 }

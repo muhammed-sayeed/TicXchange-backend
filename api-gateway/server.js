@@ -2,6 +2,7 @@ import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
 import cors from "cors";
 import dotenv from "dotenv";
+import { authenticateToken } from './middlwares/jwt.js'
 
 dotenv.config();
 
@@ -16,6 +17,14 @@ app.use(
 
 app.use("/auth", createProxyMiddleware({
     target: "http://localhost:3000",
+    changeOrigin: true
+  })
+);
+
+app.use(authenticateToken);
+
+app.use("/profile", createProxyMiddleware({
+    target: "http://localhost:3001",
     changeOrigin: true
   })
 );
